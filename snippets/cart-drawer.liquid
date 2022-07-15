@@ -1,0 +1,101 @@
+<div
+    @cart-updated.window="updateCart"
+    @toggle-cart.window="showCartDrawer=!showCartDrawer"
+    aria-labelledby="slide-over-title"
+    aria-modal="true"
+    class="relative z-10 overflow-hidden"
+    role="dialog"
+    x-data="{showCartDrawer:false, updateCart(){ // send fetch request to update cart
+        fetch('/?view=cart').then(response=>response.text()).then((cartData=>{
+        $refs.cart_content.innerHTML=cartData; })) }}"
+    x-show="showCartDrawer">
+
+    <!-- 背景蒙版 start -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+    <!-- 背景蒙版 end -->
+    <div class="fixed inset-0 overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden ">
+            <!-- 左边内容 start -->
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full w-screen">
+                <!-- 右侧 -->
+                <div @click="showCartDrawer = false" class="flex-1 pointer-events-auto"></div>
+                <!-- 左侧 -->
+                <div
+                    class="pointer-events-auto relative max-w-xs md:max-w-md "
+                    x-show="showCartDrawer"
+                    x-transition:enter-end="translate-x-0 opacity-100"
+                    x-transition:enter-start="translate-x-full opacity-0"
+                    x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+
+                    x-transition:leave-end="translate-x-full opacity-0"
+                    x-transition:leave-start="translate-x-0"
+                    x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700">
+
+                    <div class="absolute top-0 left-0 -ml-8 flex pt-4 pr-2 sm:-ml-10 sm:pr-4">
+
+                        <!-- 关闭按钮 start -->
+                        <button
+                            @click="showCartDrawer =false"
+                            class="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2
+                                focus:ring-white"
+
+                            type="button">
+                            <span class="sr-only">Close panel xx</span>
+                            <!-- Heroicon name: outline/x -->
+                            <svg
+                                aria-hidden="true"
+                                class="h-6 w-6"
+                                fill="none"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                viewbox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <!-- 关闭按钮 end -->
+                    </div>
+
+                    <div
+                        class="flex h-full flex-col overflow-hidden bg-white py-6 shadow-xl"
+                        x-ref="cart_content">
+
+                        <!-- 面板标题 start -->
+                        <!-- <div class="px-4 sm:px-6">
+                            <h2
+                                @click="showCartDrawer = false"
+                                class="text-lg font-medium text-gray-900"
+                                id="slide-over-title">Panel title</h2>
+                        </div> -->
+                        <!-- 面板标题 end -->
+                        <!-- 面板内容 start -->
+                        <!-- <div class="relative mt-6 flex-1 px-4 sm:px-6">
+                            {% for item in cart.items %}
+                                <div class="flex items-center justify-between px-4 py-2">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <img class="w-28" src="{{item.image | | img_url: '400x'}}" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm leading-5 font-mediun text-gray-900">{{item.variant.title}}</div>
+                                            <div class="mt-1 text-sm leading-5  text-gray-500">{{item.variant.price | money}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-shrink-0">
+                                        <div class="text-sm leading-5 text-gray-500"></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div> -->
+                        <!-- 面板内容 end -->
+                        {% render 'cart-form' %}
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- 左边内容 end -->
+
+        </div>
+    </div>
+</div> 

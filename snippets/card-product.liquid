@@ -1,0 +1,99 @@
+{% comment %}
+    Renders a product card
+
+    Accepts:
+    - card_product: {Object} Product Liquid object (optional)
+    - media_aspect_ratio: {String} Size of the product image card. Values are "square" and "portrait". Default is "square" (optional)
+    - show_secondary_image: {Boolean} Show the secondary image on hover. Default: false (optional)
+    - show_vendor: {Boolean} Show the product vendor. Default: false
+    - show_rating: {Boolean} Show the product rating. Default: false
+    - extend_height: {Boolean} Card height extends to available container space. Default: true (optional)
+    - lazy_load: {Boolean} Image should be lazy loaded. Default: true (optional)
+    - show_quick_add: {Boolean} Show the quick add button.
+    - section_id: {String} The ID of the section that contains this card.
+
+    Usage:
+    {% render 'card-product', show_vendor: section.settings.show_vendor %}
+{% endcomment %}
+
+{{ 'component-rating.css' | asset_url | stylesheet_tag }}
+
+{%- if card_product and card_product != empty -%}
+
+    <a href="{{ card_product.url }}" class="card-wrapper border group block">
+        <div class="card">
+            <div class="card_image">
+                <!-- 有多媒体  图片 视频    -->
+                {% if card_product.featured_media %}
+                    {% assign card_image_class = '' %} <!--  -->
+                    <!-- 第二章图片存在,并且是否鼠标移入显示第二章图片的开关是true -->
+                    {% if card_product.media[1]!= blank and show_secondary_image %}
+                        {% assign card_image_class = card_image_class | append:'group-hover:hidden' %}
+                    {% endif %}
+                    <!-- 第一张图片 -->
+                    {{ card_product.featured_media | image_url: width:900 | image_tag: loading:'lazy',class:card_image_class}}
+                        <!-- 第二章图片 -->
+                    {% if card_image_class !=blank %}
+                        {{card_product.media[1] | image_url:width:900 | image_tag: loading:'lazy', class:'hidden  group-hover:block' }}
+                    {% endif %}
+
+                {% else %}
+
+                    <!-- 否则显示占位符 --> 
+                <!--  --> {{'product-1' | placeholder_svg_tag:'placeholder-svg'}}
+
+                {% endif %}
+            </div>
+            <!-- 产品标题 -->
+            <h3 class="card__title p-2">
+                {{card_product.title}}
+            </h3>
+            <!-- 渲染 价格组件 _price-element --> 
+            <!--  -->
+            {% render '_price-element', product: card_product, class: 'px-2 pb-2' %}
+
+        </div>
+    </a>
+
+{%- else -%}
+    <div class="card-wrapper underline-links-hover">
+        <div
+            class="card card--{{ settings.card_style }} card--text {% if extend_height %}
+                card--extend-height{% endif %} {% if settings.card_style == 'card' %} color-{{
+                settings.card_color_scheme }} gradient{% endif %} {% if card_product.featured_media ==
+                nil and settings.card_style == 'card' %} ratio{% endif %}"
+            style="--ratio-percent: 100%;">
+            <div
+                class="card__inner {% if settings.card_style == 'standard' %}color-{{
+                    settings.card_color_scheme }} gradient{% endif %}{% if settings.card_style ==
+                    'standard' %} ratio{% endif %}"
+                style="--ratio-percent: 100%;">
+                <div class="card__content">
+                    <div class="card__information">
+                        <h3 class="card__heading">
+                            <a aria-disabled="true" class="full-unstyled-link" role="link">
+                                {{ 'onboarding.product_title' | t }}
+                            </a>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card__content">
+                <div class="card__information">
+                    <h3 class="card__heading{% if settings.card_style == 'standard' %} h5{% endif %}">
+                        <a aria-disabled="true" class="full-unstyled-link" role="link">
+                            {{ 'onboarding.product_title' | t }}
+                        </a>
+                    </h3>
+                    <div class="card-information">
+                        {%- if show_vendor -%}
+                            <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+                            <div class="caption-with-letter-spacing light">{{ 'products.product.vendor' | t }}</div>
+                        {%- endif -%}
+                        {% render 'price' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endif -%}
